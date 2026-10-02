@@ -21,16 +21,24 @@ npm run build        # 类型检查 + 生产构建
 npm run preview      # 预览构建产物
 ```
 
+## 交付前一键验收
+
+```bash
+npm run release:check
+```
+
+一条命令跑完以前的人工流程：生产构建 → 量包总体积/最大单文件（超上限失败）→ 扫产物外部地址（非白名单即失败）→ 核对 10 个纹样与字体随包齐全且与源文件逐字节一致 → 用应用自身的导入器解析每个纹样、轮廓数与本 README 的验收记录对账 → 导出 A4 1:1 检查图量 100/50mm 校验尺与 210×297mm 纸幅 → 起服务打开 7 个带参数地址确认都回退到同一个 index.html 入口（非空白页）→ 经 HTTP 跑 `/help` 那套 19 条验收自检；有 docker/podman 时构建镜像、起容器、查 `/healthz`、量镜像 ≤60MB，**本机没有容器工具时容器六步自动跳过并写明原因**（路由改走本地 preview，结论等价）。整套检查连跑两轮并逐项比对测量值，保证重复运行结论一致。每项打印量到的值、上限和结论，任一失败则退出码 1 并点名失败项。详见 [`scripts/release-check/README.md`](scripts/release-check/README.md)。
+
 ## Docker 构建
 
 ```bash
 docker compose build            # 多阶段构建（node:20-alpine → nginx:1.27-alpine）
-docker compose up -d --build    # 如本机 8107 空闲
-curl http://localhost:8107/healthz
+docker compose up -d --build    # 如本机 8257 空闲
+curl http://localhost:8257/healthz
 docker compose down
 ```
 
-- 端口映射 `8107:80`，`restart: unless-stopped`，`HEALTHCHECK` 请求 `/healthz`
+- 端口映射 `8257:80`，`restart: unless-stopped`，`HEALTHCHECK` 请求 `/healthz`
 - 运行阶段只拷 `dist/` 与 `nginx.conf`（SPA 回退、哈希资源 immutable、index.html no-cache、gzip）
 - 构建上下文 0.36MB；运行镜像 21.08MB（`docker image inspect` 的 rootfs，基础镜像 nginx:1.27-alpine 本身 20.98MB）
 
