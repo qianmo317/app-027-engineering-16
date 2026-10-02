@@ -21,6 +21,29 @@ npm run build        # 类型检查 + 生产构建
 npm run preview      # 预览构建产物
 ```
 
+## 离线交付一键验收
+
+拷到无网机器前，跑一条命令把交付前的人工动作（构建 → 量体积 → 翻外链 → 点纹样/字体 → 对轮廓数 → 量检查图缩放 → 开带参数页面 → 量包大小）全部并起来：
+
+```bash
+npm run verify:release
+```
+
+逐项执行并打印「量到的值 / 上限 / 结论」，任何一项不过整条命令非零退出并在汇总里点名是哪一项；连着跑两次结论必须一致（第一次记录基线快照，第二次起比对体积、外链、轮廓数、逐项自检结论，耗时类数值不参与）。
+
+| 项 | 核对内容 | 默认上限 |
+| --- | --- | --- |
+| build | `npm run build`（vue-tsc + vite） | 构建必须成功 |
+| size | dist 总体积、最大单文件 | 总包 2MiB、单文件 512KiB |
+| external | 扫描产物全部外部地址（W3C 命名空间标识符与 Vue 错误文档链接在白名单） | 发现非白名单外链即失败 |
+| assets | 10 个纹样 + 字体一个不少，与 `public/` 源逐字节一致；字体被产物 CSS 引用 | 缺一/不一致即失败 |
+| selftest | Node 内原样运行 `/help` 同一颗 `runSelfTest`（自带极简 XML DOM 垫片，不复制判定逻辑）；每个纹样轮廓数三方核对：验收记录 `acceptance/expected-contours.json` = 自检内核 = 随包文件解析（27/23/6/4/24/23/28/12/10/23） | 19/19 用例通过且轮廓数全相等 |
+| a4 | 导出 A4 1:1 检查图到 `verify-out/a4-check-1to1.svg`，量 100mm 横尺 / 50mm 竖尺线段长度与 210×297mm 纸幅 | 尺误差 ≤ 1mm，纸幅/viewBox 必须一致 |
+| routes | 起静态服务器直开 `/`、`/design/:id`、`/layout/:id?...`、`/export/:id?...`、`/materials`、`/help` 等 | 全部回到同一个 index.html（非空白），缺失哈希资源明确 404 |
+| container | 有 docker/podman 时：构建镜像 → 起容器 → `/healthz` + 深路径 → 镜像体积 | 镜像 < 60MB；**本机无容器工具则跳过并写明原因**（路由由本机静态服务器等效验证） |
+
+上限可用环境变量覆盖：`VERIFY_MAX_TOTAL_BYTES` / `VERIFY_MAX_FILE_BYTES` / `VERIFY_MAX_IMAGE_BYTES`。
+
 ## Docker 构建
 
 ```bash

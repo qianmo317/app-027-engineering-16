@@ -1,0 +1,20 @@
+{
+  "_comment": "离线交付验收基线：纹样/字体清单与「页面验收自检记录」里每个纹样的轮廓数。轮廓数来自 README 验收结果表（10 个文件：27/23/6/4/24/23/28/12/10/23），验收时页面自检内核跑出来的数与随包文件解析出的数都必须与之逐项相等。",
+  "patterns": [
+    { "file": "window-flower-classic.svg", "name": "经典八角窗花", "expectedContours": 27 },
+    { "file": "concentric-three.svg", "name": "同心三层窗花", "expectedContours": 23 },
+    { "file": "self-cross-flower.svg", "name": "缠枝自交花", "expectedContours": 6 },
+    { "file": "open-spiral.svg", "name": "盘长未闭合纹", "expectedContours": 4 },
+    { "file": "petal-scatter.svg", "name": "雪花散点碎片", "expectedContours": 24 },
+    { "file": "xi-double-happiness.svg", "name": "囍字团花", "expectedContours": 23 },
+    { "file": "zodiac-rabbit.svg", "name": "生肖·兔", "expectedContours": 28 },
+    { "file": "zodiac-dragon.svg", "name": "生肖·龙", "expectedContours": 12 },
+    { "file": "lace-border.svg", "name": "回纹花边", "expectedContours": 10 },
+    { "file": "butterfly-marriage.svg", "name": "双蝶婚庆", "expectedContours": 23 }
+  ],
+  "fonts": [
+    { "file": "plotter-mono.ttf", "name": "刻绘等宽技术字体", "referencedBy": "src/styles/global.css 的 @font-face (/fonts/plotter-mono.ttf)" }
+  ],
+  "sheet": { "widthMm": 210, "heightMm": 297, "name": "A4 纵向" },
+  "ruler": { "horizontalMm": 100, "verticalMm": 50, "toleranceMm": 1 }
+}
